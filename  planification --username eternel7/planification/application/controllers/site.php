@@ -1,28 +1,25 @@
 <?php
 
 class site extends Controller {
-	
-    function site()
-    {
+
+    function site() {
         parent::Controller();
         $this->load->scaffolding('config');
     }
-    function index()
-    {
+    function index() {
         $data['Myvalue'] = 'A value';
         $data['Myvalue2'] = 'A second value';
         $this->load->model('site_model');
         $data['records']=$this->site_model->Getall();
         $this->load->view('home',$data);
     }
-    function about()
-    {
+    function about() {
         $this->load->model('site_model');
 
 
         $prefs = array (
-        'show_next_prev'  => TRUE,
-        'next_prev_url'   => 'http://localhost/codeingniter/index.php/site/about/show/'
+                'show_next_prev'  => TRUE,
+                'next_prev_url'   => 'http://localhost/codeingniter/index.php/site/about/show/'
         );
         $prefs['template'] = '
         {table_open}<table border="1" cellpadding="0" cellspacing="0">{/table_open}
