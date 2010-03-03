@@ -4,58 +4,34 @@ class site extends Controller {
 
     function site() {
         parent::Controller();
-        $this->load->scaffolding('config');
+        $this->is_logged_in();
     }
-    function index() {
-        $data['Myvalue'] = 'A value';
-        $data['Myvalue2'] = 'A second value';
-        $this->load->model('site_model');
-        $data['records']=$this->site_model->Getall();
-        $this->load->view('home',$data);
+
+    function membersarea()
+    {
+        //Chargement du parametre de langue
+        $data['lang']=$this->config->item('lang');
+        //Chargement du fichier de langue
+        $this->lang->load('site', 'french');
+
+        $data['main_content']= 'home';
+        $data['sous_type']='';
+        $this->load->view('includes/template_logged',$data);
     }
-    function about() {
-        $this->load->model('site_model');
 
+    function is_logged_in()
+    {
+        $is_logged_in = $this->session->userdata('is_logged_in');
 
-        $prefs = array (
-                'show_next_prev'  => TRUE,
-                'next_prev_url'   => 'http://localhost/codeingniter/index.php/site/about/show/'
-        );
-        $prefs['template'] = '
-        {table_open}<table border="1" cellpadding="0" cellspacing="0">{/table_open}
+        if(!isset($is_logged_in) || $is_logged_in != true)
+        {
+            //Chargement du parametre de langue
+            $data['lang']=$this->config->item('lang');
+            //Chargement du fichier de langue
+            $this->lang->load('site', 'french');
 
-        {heading_row_start}<tr>{/heading_row_start}
-
-        {heading_previous_cell}<th><a href="{previous_url}">&lt;&lt;</a></th>{/heading_previous_cell}
-        {heading_title_cell}<th colspan="{colspan}">{heading}</th>{/heading_title_cell}
-        {heading_next_cell}<th><a href="{next_url}">&gt;&gt;</a></th>{/heading_next_cell}
-
-        {heading_row_end}</tr>{/heading_row_end}
-
-        {week_row_start}<tr>{/week_row_start}
-        {week_day_cell}<td>{week_day}</td>{/week_day_cell}
-        {week_row_end}</tr>{/week_row_end}
-
-        {cal_row_start}<tr>{/cal_row_start}
-        {cal_cell_start}<td>{/cal_cell_start}
-
-        {cal_cell_content}<a href="{content}">{day}</a>{/cal_cell_content}
-        {cal_cell_content_today}<div class="highlight"><a href="{content}">{day}</a></div>{/cal_cell_content_today}
-
-        {cal_cell_no_content}{day}{/cal_cell_no_content}
-        {cal_cell_no_content_today}<div class="highlight">{day}</div>{/cal_cell_no_content_today}
-
-        {cal_cell_blank}&nbsp;{/cal_cell_blank}
-
-        {cal_cell_end}</td>{/cal_cell_end}
-        {cal_row_end}</tr>{/cal_row_end}
-
-        {table_close}</table>{/table_close}
-        ';
-
-        $this->load->library('calendar', $prefs);
-        $data['myCalendar']= $this->calendar->generate($this->uri->segment(4), $this->uri->segment(5));
-
-        $this->load->view('about',$data);
+            echo 'You don\'t have permission to access this page. <a href="../login">Login</a>';
+            die();
+        }
     }
 }
