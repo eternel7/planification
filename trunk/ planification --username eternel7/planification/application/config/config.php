@@ -2,6 +2,25 @@
 
 /*
 |--------------------------------------------------------------------------
+| Project own configuration variables
+|--------------------------------------------------------------------------
+|
+| Variables scpecifics to the projects
+|
+|
+*/
+
+//database tables prefixe
+$config['dbtableprefixe'] = "plan_";
+
+//server root
+$config['server_root']	= $_SERVER['DOCUMENT_ROOT'];
+
+//lang short tag
+$config['lang']	= "fr";
+
+/*
+|--------------------------------------------------------------------------
 | Base Site URL
 |--------------------------------------------------------------------------
 |
@@ -12,7 +31,7 @@
 |
 */
 $config['base_url']	= "http://localhost/codeingniter/";
-$config['server_root']	= $_SERVER['DOCUMENT_ROOT'];
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +54,7 @@ $config['index_page'] = "index.php";
 | URI string.  The default setting of "AUTO" works for most servers.
 | If your links do not seem to work, try one of the other delicious flavors:
 |
-| 'AUTO'			Default - auto detects
+| 'AUTO'		Default - auto detects
 | 'PATH_INFO'		Uses the PATH_INFO
 | 'QUERY_STRING'	Uses the QUERY_STRING
 | 'REQUEST_URI'		Uses the REQUEST_URI
@@ -264,7 +283,7 @@ $config['cookie_path']		= "/";
 | COOKIE data is encountered
 |
 */
-$config['global_xss_filtering'] = FALSE;
+$config['global_xss_filtering'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
