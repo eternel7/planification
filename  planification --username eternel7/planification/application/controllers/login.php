@@ -62,7 +62,7 @@ class Login extends Controller
         //field name, error message, validation rules
 
         $this->form_validation->set_rules('username',$this->lang->line('login_create_user_username'),'trim|required|min_length[4]|xss_clean');
-        $this->form_validation->set_rules('password',$this->lang->line('login_create_user_pwd'),'trim|required|min_length[4]|xss_clean');
+        $this->form_validation->set_rules('password',$this->lang->line('login_create_user_pwd'),'trim|required|min_length[6]|xss_clean');
         $this->form_validation->set_rules('password2',$this->lang->line('login_confirm_pwd'),'trim|required|matches[password]|xss_clean');
         $this->form_validation->set_rules('email',$this->lang->line('login_email'),'trim|required|valid_email|xss_clean');
         $this->form_validation->set_rules('first_name',$this->lang->line('login_first_name'),'htmlspecialchars');

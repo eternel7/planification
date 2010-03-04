@@ -6,10 +6,11 @@ echo form_open('login/createuser',$attributes); ?>
     <legend><span><?php echo ($this->lang->line('login_login_info'));?></span></legend>
     <?php
     echo lang('login_create_user_username','username');
-    ?><div id="existtest" title="Compte d&eacute;j&agrave; existant"></div><div id="existtestko" title="Compte ok"></div><?php
-    $attributes_username = 'id="username" title="'.$this->lang->line('login_create_user_username_title').'"';
+    ?><div id="usernameexisttest" >&nbsp;</div>
+    <?php $attributes_username = 'id="username" title="'.$this->lang->line('login_create_user_username_title').'"';
     echo form_input('username',set_value('username'),$attributes_username);
-    ?><script type="text/javascript">
+    ?>
+    <script type="text/javascript">
         // <![CDATA[
         $('#username').blur(function() {
             $.ajax({
@@ -21,14 +22,22 @@ echo form_open('login/createuser',$attributes); ?>
                 data: "username="+$("#username").val(),
                 success: function(donnee) {
                     if(donnee!='false' && donnee!=''){
-                        $("#existtestko").hide('slow');
-                        $("#existtest").fadeIn('slow');
+                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_nok.png)');
+                        $('#usernameexisttest').attr('title','Compte déjà existant');
+                        $('#usernameexisttest').fadeIn('slow');
                         return true;
                     }
+                    else if($('#username').val().length<4){
+                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_nok.png)');
+                        $('#usernameexisttest').attr('title','Compte trop court (min 4 caractères)');
+                        $('#usernameexisttest').fadeIn('slow');
+                    }
+
                     else
                     {
-                        $("#existtest").hide('slow');
-                        $("#existtestko").fadeIn('slow');
+                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_ok.png)');
+                        $('#usernameexisttest').attr('title','Création possible');
+                        $('#usernameexisttest').fadeIn('slow');
                         return false;
                     }
                 }
