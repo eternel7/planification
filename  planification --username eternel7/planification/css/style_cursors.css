@@ -1,0 +1,22 @@
+/* 
+    Document   : style_cursors
+    Created on : 19 mars 2010, 19:47:14
+    Author     : eternel
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+cursor_auto {
+    cursor:auto;
+}
+cursor_crosshair {
+    cursor:crosshair;
+}
+cursor_pointer {
+    cursor: pointer;
+}

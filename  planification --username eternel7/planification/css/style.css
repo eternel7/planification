@@ -20,23 +20,26 @@
 }
 
 #pieddepage {
-	text-align:center;
-	vertical-align:bottom;
-	width:100%;
-	}
-	#pieddepage a:link, #pieddepage a:visited {
-		margin-right: 20px;
-		}
-	#pieddepage li {
-		line-height: 2.5ex;
-		list-style-type: none;
-		display: inline;
-		padding-top: 5px;
-		margin-bottom: 5px;
-		}
+    position: static;
+    clear: both;
+    text-align:center;
+    vertical-align:bottom;
+    width:100%;
+    }
+    #pieddepage a:link, #pieddepage a:visited {
+            margin-right: 20px;
+            border-style: none;
+            }
+    #pieddepage li {
+            line-height: 2.5ex;
+            list-style-type: none;
+            display: inline;
+            padding-top: 5px;
+            margin-bottom: 5px;
+            }
                 
 /* div specifiques */
-#login_form {
+#loginform {
     width: 300px;
     background: #f0f0f0;
     border: 1px solid white;
@@ -62,7 +65,7 @@ body {
 
 h1,h2,h3,h4,h5 {
     margin-top: 0;
-    font-family: arial black, arial;
+    font-family: 'arial black', arial;
     text-align: center;
 }
 
@@ -114,4 +117,22 @@ fieldset {
     margin: auto;
     margin-bottom: 2em;
     display: block;
+
+    border-right-style: ridge;
+    border-left-style: ridge;
+    border-bottom-style: ridge;
+    border-top-style: ridge;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
+    border-right-color: white;
+    border-left-color: white;
+    border-bottom-color: white;
+    border-top-color: white;
+    padding-left: 1em;
+    padding-bottom: 1em;
+    padding-top: 1em;
+    padding-right: 1em;
+    margin-top: 2px;
 }
