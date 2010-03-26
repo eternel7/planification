@@ -1,6 +1,6 @@
 <?php
 
-Class User_model extends Model{
+Class User_model extends Model {
 
     function validate()
     {
@@ -9,7 +9,7 @@ Class User_model extends Model{
         $this->db->where('mot_de_passe',$this->input->post('password'));
         $query = $this->db->get($suffixe_table.'utilisateur');
 
-        if ($query->num_rows ==1)
+        if ($query->num_rows == 1)
         {
             return true;
         }
