@@ -1,4 +1,4 @@
-<div id="login_form">
+<div id="loginform">
     <h1><span><?php echo ($this->lang->line('login_title'));?></span></h1>
     <?php
     $attributes = array('id' => 'identification', 'onsubmit' =>'return md5_mdp();');
