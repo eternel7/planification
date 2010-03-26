@@ -6,14 +6,18 @@
 
 class Login extends Controller
 {
+
     function index()
     {
+        $data = array();
         //Chargement du parametre de langue
         $data['lang']=$this->config->item('lang');
         //Chargement du fichier de langue
         $this->lang->load('login', 'french');
         
-        $data['main_content']='login_form';
+        $data['main_content']=array (
+            'first' =>'login_form',
+            );
         $data['sous_type']='login';
         $this->load->view('includes/template',$data);
     }
@@ -41,6 +45,7 @@ class Login extends Controller
 
     function signup()
     {
+        $data = array();
         //Chargement du parametre de langue
         $data['lang']=$this->config->item('lang');
         //Chargement du fichier de langue
@@ -53,6 +58,7 @@ class Login extends Controller
 
     function createuser()
     {
+        $data = array();
         //Chargement du parametre de langue
         $data['lang']=$this->config->item('lang');
         //Chargement du fichier de langue
@@ -90,6 +96,7 @@ class Login extends Controller
             }
         }
     }
+    
     function getgraindesel()
     {
         $this->load->model('user_model');
