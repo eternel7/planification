@@ -9,6 +9,7 @@
                 <meta name="robots" content="all" />
                 <meta http-equiv="Content-Script-Type" content="text/javascript" />
                 <meta http-equiv="Content-Style-Type" content="text/css" />
+                <link rel="stylesheet" href="<?php echo base_url();?>css/reset.css" type="text/css" media="all" title="stylesheet" charset="UTF-8" />
                 <link rel="stylesheet" href="<?php echo base_url();?>css/style.css" type="text/css" media="all" title="stylesheet" charset="UTF-8" />
                 <link rel="shortcut icon" href="<?php echo base_url();?>images/favicon.ico" type="image/x-icon" />
                 <link rel="icon" href="<?php echo base_url();?>images/favicon-anim.gif" type="image/gif" />
