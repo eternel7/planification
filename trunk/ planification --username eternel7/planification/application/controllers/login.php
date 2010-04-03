@@ -1,8 +1,4 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 class Login extends Controller
 {
@@ -16,8 +12,8 @@ class Login extends Controller
         $this->lang->load('login', 'french');
         
         $data['main_content']=array (
-            'first' =>'login_form',
-            );
+            'first' =>'login_form'
+             );
         $data['sous_type']='login';
         $this->load->view('includes/template',$data);
     }
