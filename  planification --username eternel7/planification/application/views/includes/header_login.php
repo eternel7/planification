@@ -15,11 +15,11 @@
                 <link rel="icon" href="<?php echo base_url();?>images/favicon-anim.gif" type="image/gif" />
                 <!-- to correct the unsightly Flash of Unstyled Content. http://www.bluerobot.com/web/css/fouc.asp -->
                 <script type="text/javascript"></script>
-                <script type="text/javascript" src="<?php echo base_url();?>javascript/jquery1.3.2.js"></script>
+                <script type="text/javascript" src="<?php echo base_url();?>javascript/jQuery/jquery1.3.2.js"></script>
                 <script type="text/javascript" src="<?php echo base_url();?>javascript/md5.js"></script>
-                <script type="text/javascript" src="<?php echo base_url();?>javascript/jquery.sha1.js"></script>
-                <script type="text/javascript" src="<?php echo base_url();?>javascript/jquery.sparkline.js"></script>
-                <script type="text/javascript" src="<?php echo base_url();?>javascript/jquery.hashmask.js"></script>
+                <script type="text/javascript" src="<?php echo base_url();?>javascript/jQuery/jquery.sha1.js"></script>
+                <script type="text/javascript" src="<?php echo base_url();?>javascript/jQuery/jquery.sparkline.js"></script>
+                <script type="text/javascript" src="<?php echo base_url();?>javascript/jQuery/jquery.hashmask.js"></script>
                 <script type="text/javascript">
                     <!--
                     function md5_mdp() {

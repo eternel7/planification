@@ -7,10 +7,10 @@ else
 {
     $this->load->view('includes/header_960cssgrid');
 }
-if (!is_array($main_content)){
+if (isset($main_content) && !is_array($main_content)){
     $this->load->view($main_content);
 }
-else {
+elseif (isset($main_content) && is_array($main_content)) {
     foreach ($main_content as $content){
         $this->load->view($content);
     }
