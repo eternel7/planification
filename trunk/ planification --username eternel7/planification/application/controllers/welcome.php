@@ -17,9 +17,8 @@ class Welcome extends Controller {
             $data = array();
             //Chargement du parametre de langue
             $data['lang']=$this->config->item('lang');
-            //Chargement du fichier de langue
-            $this->lang->load('login', 'french');
-            $this->load->view('test_1',$data);
+            $data['main_content']='test_1';
+            $this->load->view('includes/template_960cssgrid',$data);
         }
 }
 
