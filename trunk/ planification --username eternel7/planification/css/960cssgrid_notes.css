@@ -1,0 +1,120 @@
+/* new notes */
+.notes-opener{
+    cursor: pointer;
+}
+/* reduce notes */
+.notes-reducer{
+    cursor: pointer;
+}
+/* save all notes */
+.notes-saver{
+    cursor: pointer;
+}
+/* save all notes */
+.notes-trasher{
+    cursor: crosshair;
+    top: 80%;
+}
+/* notes */
+.notes {
+    height: auto;
+    width: auto;
+    min-width: 250px;
+    position: absolute;
+    left:0;
+    top:0;
+    background-color: #ffffcc;
+    border-style: solid;
+    border-top-width: 1px;
+    border-left-width: 1px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-color: silver;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+}
+.notes-title {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 25px;
+}
+.notes-title input{
+    cursor: text;
+    width: 65%;
+    background-color: #ffffcc;
+    border-top-style: none;
+    border-bottom-style: dotted;
+    border-left-style: none;
+    border-right-style: none;
+    border-bottom-width: 1px;
+}
+.notes-title input:hover{
+    border-style: inset;
+    border-width: 1px;
+}
+/* draggable area handle */
+.notes-drag-area {
+    cursor: move;
+}
+/* icons */
+.notes-icons {
+    cursor: pointer;
+    position: relative;
+}
+.notes-icons-up {
+    float: right;
+}
+.notes-icons-down {
+}
+
+.notes-icons-triangle-1-s {
+    float: left;
+}
+
+.notes-default-hidden-part {
+    display: none;
+}
+
+.notes-color-picker {
+    position: relative;
+    top: 0;
+    left:0;
+    width: 195px;
+    height: 195px;
+    overflow: auto;
+}
+/* text area of the notes */
+.notes textarea{
+    position:relative;
+    clear: left;
+    height: 215px;
+    width: 249px;
+    background-color: #ffffcc;
+    border-style: none;
+    margin-top: 1px;
+    margin-left: 1px;
+    margin-right: 1px;
+    margin-bottom: 1px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+.notes textarea:hover{
+    border-style: inset;
+    border-width: 1px;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+/* global parameters on notes */
+.notes-effect {
+    margin-bottom: 5px;
+    display: block;
+}
+.notes-effect select{
+    float: right;
+}
