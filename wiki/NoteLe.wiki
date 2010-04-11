@@ -2,7 +2,7 @@
 
 = Introduction =
 
-NoteLe est une application qui créé des notes (post-it) partageables entre utilisateur avec des métadonnées associées si besoin.
+*NoteLe* est une application qui créé des notes (post-it) partageables entre utilisateur avec des métadonnées associées si besoin.
 
 = Fonctions =
 
