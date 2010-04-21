@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php echo $lang; ?>" lang="<?php echo $lang; ?>">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -14,9 +15,15 @@
         <link rel="stylesheet" href="<?php echo base_url();?>javascript/jQuery/css/ui-lightness/jquery-ui-1.8rc3.custom.css" type="text/css" media="all" />
         
         <!-- overrides to base library -->
-        <link rel="stylesheet" href="<?php echo base_url();?>css/960cssgrid.css" type="text/css" media="all" title="stylesheet" charset="UTF-8" />
+        <!-- <link rel="stylesheet" href="<?php echo base_url();?>css/960cssgrid.css" type="text/css" media="all" title="stylesheet" charset="UTF-8" /> -->
+        <link rel="stylesheet" href="<?php echo base_url();?>css/jnote_le.css" type="text/css" media="all" title="stylesheet" charset="UTF-8" />
+        <!-- <link type="text/css" rel="stylesheet" href="<?php echo base_url();?>javascript/jQuery/richtexteditor/jquery.rte.css" /> -->
 
-         <link rel="shortcut icon" href="<?php echo base_url();?>images/favicon.ico" type="image/x-icon" />
+        <!-- extentions -->
+        <link rel="stylesheet" href="<?php echo base_url();?>javascript/jQuery/extensions/farbtastic12/farbtastic.css" type="text/css" />
+
+        <!-- images and icons -->
+        <link rel="shortcut icon" href="<?php echo base_url();?>images/favicon.ico" type="image/x-icon" />
         <link rel="icon" href="<?php echo base_url();?>images/favicon-anim.gif" type="image/gif" />
     </head>
     <body>
