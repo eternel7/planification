@@ -10,20 +10,33 @@
 .notes-saver{
     cursor: pointer;
 }
-/* save all notes */
+/* bin for real erase of notes */
 .notes-trasher{
     cursor: crosshair;
-    top: 80%;
+}
+
+#notes_container{
+    position: absolute;
+    left: 50%;
+    top: 20%;
+}
+/* liste des notes pour fonction sortable */
+.notes-anchor-ul {
+    display: table-row;
+}
+.notes-list {
+    list-style-type: none;
+    height: 36px;
+    width: 250px;
 }
 /* notes */
 .notes {
+    display: block;
     height: auto;
-    width: auto;
-    min-width: 250px;
+    width: 300px;
     position: absolute;
     left:0;
     top:0;
-    background-color: #ffffcc;
     border-style: solid;
     border-top-width: 1px;
     border-left-width: 1px;
@@ -35,14 +48,13 @@
     padding-bottom: 5px;
 }
 .notes-title {
-    margin-top: 5px;
+    margin-top: 2px;
     margin-bottom: 5px;
     height: 25px;
 }
 .notes-title input{
     cursor: text;
-    width: 65%;
-    background-color: #ffffcc;
+    width: 60%;
     border-top-style: none;
     border-bottom-style: dotted;
     border-left-style: none;
@@ -53,6 +65,10 @@
     border-style: inset;
     border-width: 1px;
 }
+.notes_content{
+    display: block;
+    margin-bottom: 5px;
+}
 /* draggable area handle */
 .notes-drag-area {
     cursor: move;
@@ -61,15 +77,39 @@
 .notes-icons {
     cursor: pointer;
     position: relative;
+    display: inline-block;
+    border-right-style: none;
+    border-left-style: none;
+    border-bottom-style: none;
+    border-top-style: none;
+    margin-right: 0px;
+    margin-left: 0px;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
 }
-.notes-icons-up {
+.notes-icons-up-left {
+    float: left;
+}
+.notes-icons-up-right {
     float: right;
 }
-.notes-icons-down {
+.notes-icons-list{
+    -moz-padding-start:0px;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
 }
-
-.notes-icons-triangle-1-s {
-    float: left;
+.notes-icons-list-element {
+    list-style-type: none;
+    list-style-position: inside;
+    list-style-image: none;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    position:relative;
+    display:inline;
 }
 
 .notes-default-hidden-part {
@@ -77,7 +117,7 @@
 }
 
 .notes-color-picker {
-    position: relative;
+    position: absolute;
     top: 0;
     left:0;
     width: 195px;
@@ -87,10 +127,8 @@
 /* text area of the notes */
 .notes textarea{
     position:relative;
-    clear: left;
-    height: 215px;
-    width: 249px;
-    background-color: #ffffcc;
+    height: auto;
+    width: 100%;
     border-style: none;
     margin-top: 1px;
     margin-left: 1px;
@@ -113,8 +151,8 @@
 /* global parameters on notes */
 .notes-effect {
     margin-bottom: 5px;
-    display: block;
+    display: table-row;
 }
-.notes-effect select{
-    float: right;
+.notes-effect-element {
+    display: table-cell;
 }
