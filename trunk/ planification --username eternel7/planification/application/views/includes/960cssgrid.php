@@ -41,7 +41,7 @@ for ($i = 1 ; $i <= $numtab ; $i++)
     $grid.="\t";
 }
 
-$grid.="<div id=\"".$prefixe."_".$chrono."\" class=\"grid_".$size." \">".$content."\n";
+$grid.="<div id=\"".$prefixe."_".$chrono."\" class=\"grid grid_".$size." \">".$content."\n";
 
 //ajout des tabulations avant clôture
 for ($i = 1 ; $i <= $numtab ; $i++)
