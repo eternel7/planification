@@ -41,8 +41,16 @@ function runEffect(id,effect_option){
     else if (effect_option==1){     //close (hide) note option
         note.hide(selectedEffect,options,500);
     }
-    else if (effect_option==2) {    //reduire note option
-        if (note.attr('former_top')==0) {
+    else if (effect_option==2) {    //reduire une note en 2100ms
+        //Positionnement de l'ancre 'li' de chaque note
+        var li=note.parent();
+        var li_pos=li.position();
+
+        if (note.attr('reduit')==0) {
+            //empeche la double action
+            note.attr('reduit','2');
+            
+            //fermer la note si necessaire
             if (note.attr('ferme')==0) {
                 runEffect(id,3);
             }
@@ -52,61 +60,99 @@ function runEffect(id,effect_option){
             note.attr('former_left',parseInt(note_position.left));
             setTimeout(function(){
                 note.animate({
-                    "left": "30px",
-                    "top": "0px"
+                    'left' : li_pos.left+'px',
+                    'top' : li_pos.top+'px'
                 }, 500);
             }, 200);
             setTimeout(function(){
-                note.css('position','relative');
-            }, 1000);
-            setTimeout(function(){
-                note.animate({
-                    "top": "0px"
-                }, 500);
+                note.css({
+                    'position' : 'relative',
+                    'top' : '0px',
+                    'left' : '0px'
+                });
             }, 1500);
             setTimeout(function(){
                 $("#notes_anchor").sortable({
                     'forceHelperSize': true
                 })
                     .disableSelection();
-            }, 1100);
+            }, 1500);
+
+            //permet a nouveau d'executer l'action
+            setTimeout(function(){
+                note.attr("reduit","1");
+            },2100);
         }
-        else {
+        else if (note.attr('reduit')==1) {
+            //empeche la double action
+            note.attr('reduit','2');
+            
             $("#notes_anchor").sortable("destroy");
             note_title_area.addClass('notes-drag-area');
             note.animate({
                 "left": note.attr('former_left')+"px",
                 "top": note.attr('former_top')+"px"
-            }, 500).css('position','absolute');
+            }, 1500);
+            note.css({
+                'left' : li_pos.left+'px',
+                'top' : li_pos.top+'px',
+                'position' : 'absolute'
+            });
             note.attr('former_top',0);
             note.attr('former_left',0);
-            if (note.attr('ferme')==1) {
-                runEffect(id,3);
-            }
+
+            //ouvre la note si necessaire
+            setTimeout(function(){
+                if (note.attr('ferme')==1) {
+                    runEffect(id,3);
+                }
+            },1500);
+            //rend la note deplacable par glisser-deplacer
             note.draggable({
                 handle: 'h1'
             });
+
+            //permet a nouveau d'executer l'action
+            setTimeout(function(){
+                note.attr('reduit','0');
+            },2100);
         }
     }
-    else if (effect_option==3) {    //reduire content note option
+    else if (effect_option==3) {    //fermer une note en 600ms
         if (note.attr('ferme')==0) {
+            //empeche la double action
+            note.attr('ferme','2');
+
             note.attr('former_content_height',note_content.css('height'));
             note.attr('former_content_width',note_content.css('width'));
+            note.attr('former_height',note.css('height'));
+            note.attr('former_width',note.css('width'));
             note.resizable("destroy");
-            note_content.toggle(selectedEffect,options,500);
-            setTimeout(function(){
-                note.animate({
+            note.animate({
                     "height": "25px",
                     "width": "250px"
                 },500);
+            setTimeout(function(){
+                note_content.toggle(selectedEffect,options,500);
             }, 20);
-            note.attr("ferme","1");
+            
+            //permet a nouveau d'executer l'action
+            setTimeout(function(){
+                note.attr('ferme','1');
+            },600);
         }
-        else {
-            note.attr("ferme","0");
-            note.css('height','auto');
-            note.css('width','auto');
+        else if (note.attr('ferme')==1) {
+            //empeche la double action
+            note.attr('ferme','2');
+
+            setTimeout(function(){
+                note.animate({
+                    "height": note.attr('former_height'),
+                    "width": note.attr('former_width')
+                },500);
+            },20);
             note_content.toggle(selectedEffect,options,500);
+
             note.draggable({
                 handle: 'h1'
             });
@@ -119,6 +165,11 @@ function runEffect(id,effect_option){
             });
             note.attr('former_content_height',0);
             note.attr('former_content_width',0);
+
+            //permet a nouveau d'executer l'action
+            setTimeout(function(){
+                note.attr('ferme','0');
+            },600);
         }
     }
     else if (effect_option==4){     //save note option
@@ -146,11 +197,6 @@ $(function() {
     var z_index_max=0;
     $("#z_index_max").val(z_index_max);
 
-    //jQuery-ui theme-switcher
-    $('#switcher').themeswitcher({onSelect:function(){
-        $(this).trigger('ui-theme-switch');
-    }});
-
     //Clic pour creation des notes
     $('#opener').click(function() {
 
@@ -163,7 +209,9 @@ $(function() {
         numordre='" + identifier + "' \n\
         ferme='0' \n\
         reduit='0' \n\
-        sauve='0' \n\
+        modifie='0' \n\
+        former_height='0' \n\
+        former_width='0' \n\
         former_content_height='0' \n\
         former_content_width='0' \n\
         former_top='0' \n\
@@ -185,11 +233,12 @@ $(function() {
                     \n\
                     <!-- icones haut droite -->\n\
                     \t\t\t<div id='notes_icons_haut_droite_" + identifier + "' class='notes-icons-up-right'>\n\
-                        \t\t\t\t<span id='savebutton_" + identifier + "' title='Save' class='notes-icons notes-icons-up notes-icons-disk ui-icon ui-icon-disk '></span>\n\
-                        \t\t\t\t<span id='parambutton_" + identifier + "' title='Parameters' class='notes-icons notes-icons-up notes-icons-gear ui-icon ui-icon-gear '></span>\n\
-                        \t\t\t\t<span id='maximizebutton_" + identifier + "' title='Maximize/Minimize' class='notes-icons notes-icons-zoomin notes-icons-copy ui-icon ui-icon-zoomin  '></span>\n\
-                        \t\t\t\t<span id='reduirebutton_" + identifier + "' title='Reduce' class='notes-icons notes-icons-up notes-icons-minus ui-icon ui-icon-minus '></span>\n\
-                        \t\t\t\t<span id='closebutton_" + identifier + "' title='Close' class='notes-icons notes-icons-close ui-icon ui-icon-close '></span>\n\
+                        \t\t\t\t<ul class='notes-icons-list ui-helper-clearfix' id='icons" + identifier + "'>\n\
+                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='savebutton_" + identifier + "' title='Save' class='notes-icons notes-icons-up notes-icons-disk ui-icon ui-icon-disk '></span></li>\n\
+                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='parambutton_" + identifier + "' title='Parameters' class='notes-icons notes-icons-up notes-icons-gear ui-icon ui-icon-gear '></span></li>\n\
+                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='reduirebutton_" + identifier + "' title='Reduce' class='notes-icons notes-icons-up notes-icons-minus ui-icon ui-icon-minus '></span></li>\n\
+                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='closebutton_" + identifier + "' title='Close' class='notes-icons notes-icons-close ui-icon ui-icon-close '></span></li>\n\
+                        \t\t\t\t</ul>\n\
                     \t\t\t</div>\n\
                 \t\t</div>\n\
                 \t\t<div id='note_content_" + identifier + "' class='notes_content' >\n\
@@ -200,83 +249,11 @@ $(function() {
                     \t\t\t</div>\n\
                 \t\t</div>\n\
             \t</form>\n\
-        </div></li>\n\
-        <script type='text/javascript'>\n\
-        $('#killbutton_" + identifier + "').click(function() {\n\
-            if( confirm('Destroy this Note?') ) {\n\
-                runEffect(" + identifier + ",0);\n\
-            }\n\
-            return false;\n\
-            });\n\
-        $('#closebutton_" + identifier + "').click(function() {\n\
-            runEffect(" + identifier + ",1);\n\
-            return false;\n\
-            });\n\
-        $('#reduirebutton_" + identifier + "').click(function() {\n\
-            runEffect(" + identifier + ",2);\n\
-            return false;\n\
-            });\n\
-        $('#reduirecontenubutton_" + identifier + "').click(function() {\n\
-            runEffect(" + identifier + ",3);\n\
-            return false;\n\
-            });\n\
-//        $('#savebutton_" + identifier + "').click(function() {\n\
-//            runEffect(" + identifier + ",4);\n\
-//            return false;\n\
-//            });\n\
-        $('#parambutton_" + identifier + "').click(function() {\n\
-                if ($('#note_param_section_" + identifier + "').css('display')=='none') {\n\
-                    var param_button_position = $('#parambutton_" + identifier + "').position();\n\
-                    var top_pos=param_button_position.top+16;\n\
-                    var left_pos=param_button_position.left;\n\
-                    var note_z_index=$('#note_" + identifier + "').css('z-index');\n\
-                    $('#note_param_section_" + identifier + "').css('top',top_pos+'px');\n\
-                    $('#note_param_section_" + identifier + "').css('left',left_pos+'px');\n\
-                    $('#note_param_section_" + identifier + "').css('z-index',note_z_index+1);\n\
-                    $('#colorpicker_" + identifier + "').farbtastic('#note_color_" + identifier + "');\n\
-                    $('#note_param_section_" + identifier + "').fadeIn('slow');\n\
-                }\n\
-                else {\n\
-                    var color=$('#note_color_" + identifier + "').val();\n\
-                    $('#note_" + identifier + "').css('background-color',color);\n\
-                    $('#title_" + identifier + "').css('background-color',color);\n\
-                    $('#note_info" + identifier + "').css('background-color',color);\n\
-                    $('#note_param_section_" + identifier + "').fadeOut('slow');\n\
-                }\n\
-            return false;\n\
-            });\n\
-       $('#maximizebutton_" + identifier + "').click(function() {\n\
-                if ($('#note_" + identifier + "').attr('maximize')=='0') {\n\
-                    $('#note_" + identifier + "').attr('maximize','1');\n\
-                    $('#note_" + identifier + "').appendTo($('body')).toggleClass('notes-fullscreen');\n\
-                    $('#note_content_" + identifier + "').toggleClass('notes-content-fullscreen');\n\
-                    $('#note_info" + identifier + "').toggleClass('notes-textarea-fullscreen');\n\
-                    $('#note_" + identifier + "').animate({\n\
-                        'left': '0px',\n\
-                        'top': '0px',\n\
-                        'width': '99%',\n\
-                        'height': '99%'\n\
-                    }, 500);\n\
-                }\n\
-                else {\n\
-                    $('#note_" + identifier + "').attr('maximize','0');\n\
-                    $('#note_" + identifier + "').appendTo($('#ancre_note_" + identifier + "')).toggleClass('notes-fullscreen');\n\
-                    $('#note_content_" + identifier + "').toggleClass('notes-content-fullscreen');\n\
-                    $('#note_info" + identifier + "').toggleClass('notes-textarea-fullscreen');\n\
-                    $('#note_" + identifier + "').animate({\n\
-                        'left': '50%',\n\
-                        'top': '50%'\n\
-                    }, 500);\n\
-                    $('#note_" + identifier + "').css('height','auto');\n\
-                    $('#note_" + identifier + "').css('width','auto');\n\
-                }\n\
-            return false;\n\
-            });\n\
-        </script>";
+        </div></li>\n";
 
         //ajout de la note dans l'ancre à notes
         $('#notes_anchor').append(note_html);
-        
+
         //note dimensionnable
         $("#note_" + identifier).resizable({
             maxHeight: 50000,
@@ -307,21 +284,9 @@ $(function() {
 });
 
 $(document).ready(function() {
-    //Reduit et ranges les Notes par ordre d'id
-    $('#reducer').click(function() {
-        var all_notes=$(".notes");
-        for(i = 0; i < all_notes.length; i++)
-        {
-            var node = all_notes.eq(i);
-            var long_id = node.attr("id");
-            var id=long_id.substr(5, long_id.length-5);
-            id=parseInt(id);
-            if (!isNaN(id)){
-                runEffect(id,2);
-            }
-        }
-    });
-
+    //Actions sur une note via les icones
+    //
+    //
     //Sauve la note
     $('.notes-icons-disk').live('click',function() {
         var note = $(this).parents(".notes");
@@ -331,9 +296,123 @@ $(document).ready(function() {
             if(note.attr("a_enregistrer")==1) {
                 runEffect(id,4);
             }
+            var li=note.parent();
+            var li_pos=li.position();
+            note.animate({
+                    "left": li_pos.left+"px",
+                    "top": li_pos.top+"px"
+                },500);
+        }
+    });
+    //Reduit la note
+    $(".notes-icons-minus").live('click',function() {
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        id=parseInt(id);
+        if (!isNaN(id)){
+            if(note.attr("reduit")==0 || note.attr("reduit")==1) {
+                runEffect(id,2);
+            }
+        }
+    });
+    //Ferme la note
+    $(".notes-icons-triangle-1-s").live('click',function() {
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        id=parseInt(id);
+        if (!isNaN(id)){
+            if(note.attr("ferme")==0 || note.attr("ferme")==1) {
+                runEffect(id,3);
+            }
+        }
+    });
+    //Detruit la note
+    $(".notes-icons-trash").live('click',function() {
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        id=parseInt(id);
+        if (!isNaN(id)){
+            if( confirm('Voulez-vous vraiment envoyer cette note à la corbeille?') ) {
+                runEffect(id,0);
+            }
+        }
+    });
+    //Cache la note
+    $(".notes-icons-close").live('click',function() {
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        id=parseInt(id);
+        if (!isNaN(id)){
+            runEffect(id,1);
+        }
+    });
+    //Affiche les parametres de la note
+    $(".notes-icons-gear").live('click',function(){
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        id=parseInt(id);
+        if (!isNaN(id)){
+            var note_param_section=$('#note_param_section_' + id);
+            if (note_param_section.css('display')=='none') {
+                var param_button_position = $(this).position();
+                var top_pos=param_button_position.top+16;
+                var left_pos=param_button_position.left;
+                $('#colorpicker_' + id).farbtastic('#note_color_' + id);
+                var note_z_index=note.css('z-index');
+                note_param_section.css('top',top_pos+'px');
+                note_param_section.css('left',left_pos+'px');
+                note_param_section.css('z-index',note_z_index+1);
+                note_param_section.fadeIn('slow');
+            }
+            else {
+                var color=$('#note_color_' + id).val();
+                $('#note_' + id).css('background-color',color);
+                $('#title_' + id).css('background-color',color);
+                $('#note_info' + id).css('background-color',color);
+                note_param_section.fadeOut('slow');
+            }
         }
     });
 
+    //Actions sur une note lors d'actions utilisateur
+    //
+    //
+    //Sauvegarde a faire
+    $(".notes-change-need-save").live('change', function() {
+        var note = $(this).parents(".notes");
+        var id = note.attr("numordre");
+        if (!isNaN(id)){
+            $("#savebutton_" + id).addClass('ui-state-active');
+            $("#note_" + id).attr("a_enregistrer",1);
+        }
+    });
+    //Affichage en premier plan de la note cliquée
+    $(".notes").live('mousedown',function() {
+        var z_index_max=$('#z_index_max').val();
+        z_index_max=parseInt(z_index_max);
+        if($(this).css('z-index')<z_index_max) {
+            z_index_max++;
+            $(this).css('z-index',z_index_max);
+            $('#z_index_max').val(z_index_max);
+        }
+    });
+
+    //Actions sur toutes les notes
+    //
+    //
+    //Reduit et ranges les Notes par ordre d'id
+    $('#reducer').click(function() {
+        var all_notes=$(".notes");
+        for(i = 0; i < all_notes.length; i++)
+        {
+            var note = all_notes.eq(i);
+            var id = note.attr("numordre");
+            id=parseInt(id);
+            if (!isNaN(id)){
+                runEffect(id,2);
+            }
+        }
+    });
     //Sauve toutes les Notes
     $('#saver').click(function() {
         var all_notes=$(".notes");
@@ -351,50 +430,21 @@ $(document).ready(function() {
         }
     });
 
-    //Sauvegarde a faire
-    $('.notes-change-need-save').live('change', function() {
-        var long_id = $(this).attr("id");
-        var id=long_id.substr(6, long_id.length-6);
-        id=parseInt(id);
-        //Si c'est pas le titre c'est le textarea :
-        if (isNaN(id)){
-            id=long_id.substr(9, long_id.length-9);
-            id=parseInt(id);
-        }
-        if (!isNaN(id)){
-            $("#savebutton_" + id).addClass('ui-state-active');
-            $("#note_" + id).attr("a_enregistrer",1);
-        }
-    });
-
-    //affichage en premier plan de la note cliquée
-    $('.notes"').live('mousedown',function() {
-        var z_index_max=$('#z_index_max').val();
-        z_index_max=parseInt(z_index_max);
-        if($(this).css('z-index')<z_index_max) {
-            z_index_max++;
-            $(this).css('z-index',z_index_max);
-            $('#z_index_max').val(z_index_max);
-        }
-    });
-
-
-    //reglage de la couleur par defaut
+    //Reglage de la couleur par defaut
     $('#colorpicker').farbtastic('#default_color');
     $('#default_color').focusin(function(){
         $('#colorpicker').fadeIn('1000');
     });
-    $('#default_color').blur(function(){
+    $('#default_color').focusout(function(){
         $('#colorpicker').fadeOut('1000');
     });
 
     $("body").click(function (){
-         var all_notes=$(".notes");
+        var all_notes=$(".notes");
         for(i = 0; i < all_notes.length; i++)
         {
             var node = all_notes.eq(i);
-            var long_id = node.attr("id");
-            var id=long_id.substr(5, long_id.length-5);
+            var id = node.attr("numordre");
             id=parseInt(id);
             if (!isNaN(id)){
                 var color=$("#note_color_" + id ).val();
