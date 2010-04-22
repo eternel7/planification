@@ -32,8 +32,8 @@
 /* notes */
 .notes {
     display: block;
-    height: auto;
-    width: 300px;
+    height: 250px;
+    width: 250px;
     position: absolute;
     left:0;
     top:0;
@@ -97,6 +97,12 @@
 .notes-icons-up-right {
     float: right;
 }
+.notes-icons-down-left{
+    float: left;
+    position: absolute;
+    bottom: 0;
+}
+
 .notes-icons-list{
     -moz-padding-start:0px;
     margin: 0px 0px 0px 0px;
@@ -126,9 +132,10 @@
 }
 /* text area of the notes */
 .notes textarea{
-    position:relative;
-    height: auto;
-    width: 100%;
+    position: absolute;
+    height: 210px;
+    width: 248px;
+    bottom: 20px;
     border-style: none;
     margin-top: 1px;
     margin-left: 1px;
