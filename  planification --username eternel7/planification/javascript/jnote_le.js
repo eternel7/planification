@@ -36,7 +36,7 @@ function runEffect(id,effect_option){
     var note_content=$("#note_content_"+id);
 
     if (effect_option==0) {     //delete note option
-        note.hide(selectedEffect,options,500,remove_note(id));
+        note.hide(selectedEffect,options,500,remove_note(note));
     }
     else if (effect_option==1){     //close (hide) note option
         note.hide(selectedEffect,options,500);
@@ -49,7 +49,7 @@ function runEffect(id,effect_option){
         if (note.attr('reduit')==0) {
             //empeche la double action
             note.attr('reduit','2');
-            
+
             //fermer la note si necessaire
             if (note.attr('ferme')==0) {
                 runEffect(id,3);
@@ -75,7 +75,7 @@ function runEffect(id,effect_option){
                 $("#notes_anchor").sortable({
                     'forceHelperSize': true
                 })
-                    .disableSelection();
+                .disableSelection();
             }, 1500);
 
             //permet a nouveau d'executer l'action
@@ -86,7 +86,7 @@ function runEffect(id,effect_option){
         else if (note.attr('reduit')==1) {
             //empeche la double action
             note.attr('reduit','2');
-            
+
             $("#notes_anchor").sortable("destroy");
             note_title_area.addClass('notes-drag-area');
             note.animate({
@@ -108,9 +108,7 @@ function runEffect(id,effect_option){
                 }
             },1500);
             //rend la note deplacable par glisser-deplacer
-            note.draggable({
-                handle: 'h1'
-            });
+            note_deplacable(note);
 
             //permet a nouveau d'executer l'action
             setTimeout(function(){
@@ -127,15 +125,18 @@ function runEffect(id,effect_option){
             note.attr('former_content_width',note_content.css('width'));
             note.attr('former_height',note.css('height'));
             note.attr('former_width',note.css('width'));
+            
+            //empeche le redimentionnement de la note
             note.resizable("destroy");
+
             note.animate({
-                    "height": "25px",
-                    "width": "250px"
-                },500);
+                "height": "25px",
+                "width": "250px"
+            },500);
             setTimeout(function(){
                 note_content.toggle(selectedEffect,options,500);
             }, 20);
-            
+
             //permet a nouveau d'executer l'action
             setTimeout(function(){
                 note.attr('ferme','1');
@@ -153,16 +154,9 @@ function runEffect(id,effect_option){
             },20);
             note_content.toggle(selectedEffect,options,500);
 
-            note.draggable({
-                handle: 'h1'
-            });
-            note.resizable({
-                maxHeight: 50000,
-                maxWidth: 50000,
-                minHeight: 100,
-                minWidth: 250,
-                alsoResize: '.also_resize_' + id
-            });
+            note_deplacable(note);
+            note_redimensionnable(note);
+            
             note.attr('former_content_height',0);
             note.attr('former_content_width',0);
 
@@ -172,37 +166,78 @@ function runEffect(id,effect_option){
             },600);
         }
     }
-    else if (effect_option==4){     //save note option
-        $("#savebutton_" + id).removeClass('ui-state-active');
-        note.attr("a_enregistrer",0);
-    }
 }
 
-//remove html of selected notes
-function remove_note(id){
+//Retire l'ensemble du code html d'une note
+function remove_note(note){
     setTimeout(function(){
-        $("#note_"+id).remove();
+        note.parent().remove();
     }, 5000);
 }
 
-$(function() {
-    //creation de la note avec identifiant incremente pris pour z-index
+//Sauve une note
+function save_note(note){
+    var id = note.attr("numordre");
+    id=parseInt(id);
+    if (!isNaN(id)){
+        $("#savebutton_" + id).removeClass('ui-state-active');
+        note.attr("a_enregistrer",0);
+    }
+    else{
+        alert("Error during save. Didn't detect note correctly");
+    }
+}
+
+//Rend une note redimensionnable
+function note_redimensionnable(note){
+    var id = note.attr("numordre");
+    id=parseInt(id);
+    if (!isNaN(id)){
+        note.resizable({
+            maxHeight: 50000,
+            maxWidth: 50000,
+            minHeight: 100,
+            minWidth: 250,
+            alsoResize: '.also_resize_' + id
+        });
+    }
+}
+
+//Rend une note deplacable
+function note_deplacable(note){
+    note.draggable({
+        handle: '.notes-drag-area',
+        start: function() {
+            var z_index_max=$('#z_index_max').val();
+            z_index_max=parseInt(z_index_max);
+            if($(this).css('z-index')<z_index_max) {
+                z_index_max++;
+                $(this).css('z-index',z_index_max);
+                $('#z_index_max').val(z_index_max);
+            }
+        }
+    });
+}
+
+$(document).ready(function() {
+    //Creation de la note avec identifiant incremente pris pour z-index
+    //Declaration de l'identifiant incremente
     var identifier;
     identifier=parseInt(identifier);
     if (isNaN(identifier)){
         identifier=1;
     }
 
-    //z-index-max
+    //Declaration de l'index maximum des notes sur l'axe z : z-index-max
     var z_index_max=0;
     $("#z_index_max").val(z_index_max);
 
     //Clic pour creation des notes
     $('#opener').click(function() {
 
-        //declaration de la Note et des fonctions associees :
+        //Declaration de la Note et des fonctions associees :
         var default_color=$('#default_color').val();
-         z_index_max=parseInt($("#z_index_max").val());
+        z_index_max=parseInt($("#z_index_max").val());
         var new_z_index=z_index_max+1;
         var note_html = "\
         <li id='ancre_note_" + identifier + "' class='notes-list'><div id='note_" + identifier + "' class='notes ui-draggable ui-resizable' style='background-color:" + default_color + "; left:" + identifier*2 + "px; top:" + identifier*2 + "px; z-index: " + new_z_index + "; '\n\
@@ -251,39 +286,24 @@ $(function() {
             \t</form>\n\
         </div></li>\n";
 
-        //ajout de la note dans l'ancre à notes
+        //Ajout de la note dans l'ancre à notes
         $('#notes_anchor').append(note_html);
 
-        //note dimensionnable
-        $("#note_" + identifier).resizable({
-            maxHeight: 50000,
-            maxWidth: 50000,
-            minHeight: 100,
-            minWidth: 250,
-            alsoResize: '.also_resize_' + identifier
-        });
+        //Declaration de la variable correspondant à la note cree
+        var note=$("#note_" + identifier);
+        
+        //Note dimensionnable
+        note_redimensionnable(note);
 
-        //note déplacable
-        $('#note_' + identifier).draggable({
-            handle: '.notes-drag-area',
-            start: function() {
-                var z_index_max=$('#z_index_max').val();
-                z_index_max=parseInt(z_index_max);
-                if($(this).css('z-index')<z_index_max) {
-                    z_index_max++;
-                    $(this).css('z-index',z_index_max);
-                    $('#z_index_max').val(z_index_max);
-                }
-            }
-        });
+        //Note déplacable
+        note_deplacable(note);
+        
         identifier++;
         z_index_max++;
         $("#z_index_max").val(z_index_max);
         return false;
     });
-});
 
-$(document).ready(function() {
     //Actions sur une note via les icones
     //
     //
@@ -294,14 +314,8 @@ $(document).ready(function() {
         id=parseInt(id);
         if (!isNaN(id)){
             if(note.attr("a_enregistrer")==1) {
-                runEffect(id,4);
+                save_note(note);
             }
-            var li=note.parent();
-            var li_pos=li.position();
-            note.animate({
-                    "left": li_pos.left+"px",
-                    "top": li_pos.top+"px"
-                },500);
         }
     });
     //Reduit la note
@@ -423,8 +437,9 @@ $(document).ready(function() {
             var id=long_id.substr(5, long_id.length-5);
             id=parseInt(id);
             if (!isNaN(id)){
-                if($("#note_" + id).attr("a_enregistrer")==1) {
-                    runEffect(id,4);
+                var note = $("#note_" + id);
+                if(note.attr("a_enregistrer")==1) {
+                    save_note(note);
                 }
             }
         }
