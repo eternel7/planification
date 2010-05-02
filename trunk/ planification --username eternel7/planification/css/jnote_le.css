@@ -118,22 +118,181 @@
     display:inline;
 }
 
+/*Section de parametrage d'une note */
+.notes-param-section {
+    position: absolute;
+    margin-left: 5px;
+    margin-top: 5px;
+    padding: 0px;
+    height: 310px;
+    width: 300px;
+    font-size: small;
+}
+
+/*Onglets de parametrage d'une note */
+.notes-param-tabs {
+    font-size: xx-small;
+}
+.ui-tabs .ui-tabs-nav li a {
+    padding: 5px;
+}
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, .ui-tabs .ui-tabs-nav li.ui-state-processing a {
+    cursor:move;
+}
+
+.notes-param-tabs-content{
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+    padding-right: 2px !important;
+    padding-left: 2px !important;
+    padding-bottom: 2px !important;
+    padding-top: 2px !important;
+}
+
+/*Contenu des onglets de parametrage d'une note */
+.notes-param-section-content {
+    position: relative;
+    padding: 0px;
+    font-size: small;
+    height: 245px;
+    width: 294px;
+    overflow: auto;
+    margin-right: 2px;
+    margin-left: 2px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+.notes-param-section-content fieldset {
+    margin: 0 0 0 0;
+    padding: 0;
+    background-color: #F2EFE9;
+}
+.notes-param-section-content legend {
+    margin-left: 1em;
+    color: #000000;
+    font-weight: bold;
+    background-color: #f5f4f4;
+}
+.notes-param-section-content fieldset ol {
+    padding-bottom: 2px;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    list-style: none;
+}
+.notes-param-section-content fieldset li {
+    padding: 5px 5px 0 5px;
+}
+.notes-param-section-content label {
+display: block;
+}
+.notes-param-section-content input{
+    margin-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.notes-param-section-content input.readonly{
+    background-color: buttonface;
+}
+.notes-param-section-click-button{
+    float: right;
+    margin-right: 5px;
+    margin-left: 5px;
+    margin-bottom: 2px;
+    margin-top: 2px;
+}
+.notes-param-section-click-button button{
+    display:block;
+    margin:0 7px 0 0;
+    background-color: buttonface;
+    border-right-style: outset;
+    border-left-style: outset;
+    border-bottom-style: outset;
+    border-top-style: outset;
+    border-right-width: 2px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
+    border-right-color: #d4d0c8;
+    border-left-color: #d4d0c8;
+    border-bottom-color: #d4d0c8;
+    border-top-color: #d4d0c8;
+
+    font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+    font-size:100%;
+    line-height:130%;
+    text-decoration:none;
+    text-align: center;
+    font-weight:bold;
+    color:#565656;
+    cursor:pointer;
+    padding:5px 10px 6px 7px; /* Links */
+}
+.notes-param-section-click-button button{
+    width:auto;
+    overflow:visible;
+    padding:4px 10px 3px 7px; /* IE6 */
+}
+.notes-param-section-click-button button[type]{
+    padding:5px 10px 5px 7px; /* Firefox */
+    line-height:17px; /* Safari */
+}
+*:first-child+html button[type]{
+    padding:4px 10px 3px 7px; /* IE7 */
+}
+.notes-param-section-click-button button img, .notes-param-section-click-button a img{
+    margin:0 3px -3px 0 !important;
+    padding:0;
+    border:none;
+    width:16px;
+    height:16px;
+}
+/* STANDARD */
+
+button:hover, .buttons a:hover{
+    background-color: #ffffcc;
+    color:#336699;
+    border-right-style: outset;
+    border-left-style: outset;
+    border-bottom-style: outset;
+    border-top-style: outset;
+    border-right-width: 2px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
+    border-right-color: #d4d0c8;
+    border-left-color: #d4d0c8;
+    border-bottom-color: #d4d0c8;
+    border-top-color: #d4d0c8;
+}
+.notes-param-section-click-button a:active{
+    background-color:#6299c5;
+    border:1px solid #6299c5;
+    color:#fff;
+}
+
+
 .notes-default-hidden-part {
     display: none;
 }
 
 .notes-color-picker {
     position: absolute;
-    top: 0;
-    left:0;
     width: 195px;
     height: 195px;
     overflow: auto;
 }
+
 /* text area of the notes */
 .notes textarea{
     position: absolute;
-    height: 210px;
+    height: 205px;
     width: 248px;
     bottom: 20px;
     border-style: none;
