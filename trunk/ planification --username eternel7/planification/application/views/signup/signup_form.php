@@ -12,32 +12,35 @@ echo form_open('login/createuser',$attributes); ?>
     ?>
     <script type="text/javascript">
         // <![CDATA[
-        $('#username').blur(function() {
+        var username_element=$("#username");
+       username_element.blur(function() {
+
             $.ajax({
                 url: '<?php echo base_url();?>index.php/login/loginexist',
                 type: "POST",
                 cache: false,
                 async: false,
                 datatype: "text",
-                data: "username="+$("#username").val(),
+                data: "username="+username_element.val(),
                 success: function(donnee) {
+                    var username_exist_test=$('#usernameexisttest');
                     if(donnee!='false' && donnee!=''){
-                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_nok.png)');
-                        $('#usernameexisttest').attr('title','Compte déjà existant');
-                        $('#usernameexisttest').fadeIn('slow');
+                        username_exist_test.css('background','url(<?php echo base_url();?>/images/control_nok.png)');
+                        username_exist_test.attr('title','Compte déjà existant');
+                        username_exist_test.fadeIn('slow');
                         return true;
                     }
-                    else if($('#username').val().length<4){
-                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_nok.png)');
-                        $('#usernameexisttest').attr('title','Compte trop court (min 4 caractères)');
-                        $('#usernameexisttest').fadeIn('slow');
+                    else if(username_element.val().length<4){
+                        username_exist_test.css('background','url(<?php echo base_url();?>/images/control_nok.png)');
+                        username_exist_test.attr('title','Compte trop court (min 4 caractères)');
+                        username_exist_test.fadeIn('slow');
                     }
 
                     else
                     {
-                        $('#usernameexisttest').css('background','url(<?php echo base_url();?>/images/control_ok.png)');
-                        $('#usernameexisttest').attr('title','Création possible');
-                        $('#usernameexisttest').fadeIn('slow');
+                        username_exist_test.css('background','url(<?php echo base_url();?>/images/control_ok.png)');
+                        username_exist_test.attr('title','Création possible');
+                        username_exist_test.fadeIn('slow');
                         return false;
                     }
                 }
