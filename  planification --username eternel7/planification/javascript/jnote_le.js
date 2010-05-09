@@ -1,3 +1,7 @@
+//Declaration of global var :
+var notes_cookie_name = 'jnote_le_cookie';
+var notes_cookie_options = {path: '/', expires: 30};
+
 //run the currently selected effect to toggle
 function runEffect(id,effect_option){
     //the note to run the effect on
@@ -172,7 +176,7 @@ function runEffect(id,effect_option){
 function remove_note(note){
     setTimeout(function(){
         note.parent().remove();
-    }, 5000);
+    }, 600);
 }
 
 //Sauve une note
@@ -182,10 +186,63 @@ function save_note(note){
     if (!isNaN(id)){
         $("#savebutton_" + id).removeClass('ui-state-active');
         note.attr("a_enregistrer",0);
-    }
+		var note_auteur = $('#note_auteur_' + id).val();
+		$.cookie(notes_cookie_name, note_auteur, notes_cookie_options);
+	}
     else{
         alert("Error during save. Didn't detect note correctly");
     }
+	return false;
+}
+
+//Supprime une note
+function delete_note(note){
+    //get effect type from
+    var selectedEffect = "bounce";
+    selectedEffect = $('#effectTypeskill').val();
+
+    //most effect types need no options passed by default
+    var options = {};
+    //check if it's scale, transfer, or size - they need options explicitly set
+    if(selectedEffect == 'scale'){
+        options = {
+            percent: 0
+        };
+    }
+    else if(selectedEffect == 'size'){
+        options = {
+            to: {
+                width: 200,
+                height: 60
+            }
+        };
+    }
+    note.hide(selectedEffect,options,500,remove_note(note));
+}
+
+//Cache une note
+function hide_note(note){
+    //get effect type from
+    var selectedEffect = "bounce";
+    selectedEffect = $('#effectTypesclose').val();
+
+    //most effect types need no options passed by default
+    var options = {};
+    //check if it's scale, transfer, or size - they need options explicitly set
+    if(selectedEffect == 'scale'){
+        options = {
+            percent: 0
+        };
+    }
+    else if(selectedEffect == 'size'){
+        options = {
+            to: {
+                width: 200,
+                height: 60
+            }
+        };
+    }
+    note.hide(selectedEffect,options,500);
 }
 
 //Rend une note redimensionnable
@@ -208,15 +265,40 @@ function note_deplacable(note){
     note.draggable({
         handle: '.notes-drag-area',
         start: function() {
-            var z_index_max=$('#z_index_max').val();
+            var z_index_max_element=$('#z_index_max');
+            var z_index_max=z_index_max_element.val();
             z_index_max=parseInt(z_index_max);
-            if($(this).css('z-index')<z_index_max) {
+            if(note.css('z-index')<z_index_max) {
                 z_index_max++;
-                $(this).css('z-index',z_index_max);
-                $('#z_index_max').val(z_index_max);
+                note.css('z-index',z_index_max);
+                z_index_max_element.val(z_index_max);
             }
         }
     });
+}
+
+//Active les onglets de la section parametre d'une note
+function note_parameter_tab(note)
+{
+    var id = note.attr("numordre");
+    id=parseInt(id);
+    if (!isNaN(id)){
+        $(function() {
+            $("#note_param_section_"+id).tabs({fx: {opacity: 'toggle'}}).find(".ui-tabs-nav").sortable({axis:'x'});
+        });
+    }
+}
+
+//Enregistre les modifications effectuées sur les paramètres d'une note
+function note_param_section_click(id){
+    id=parseInt(id);
+    if (!isNaN(id)){
+        var note = $('#note_'+id);
+        var param_icon=note.find('.notes-icons-gear');
+        param_icon.click();
+		save_note(note);
+    }
+    return false;
 }
 
 $(document).ready(function() {
@@ -230,17 +312,31 @@ $(document).ready(function() {
 
     //Declaration de l'index maximum des notes sur l'axe z : z-index-max
     var z_index_max=0;
-    $("#z_index_max").val(z_index_max);
-
+    var z_input=$("#z_index_max");
+    z_input.val(z_index_max);
+	
+    //Recherche du cookie ou creation afin de stocker l'identifiant de l'auteur des notes
+    var notes_cookie=$.cookie(notes_cookie_name);
+    if(notes_cookie==undefined)
+    {
+            var first_date = new Date();
+			first_date = first_date.getFullYear() + "-" + first_date.getMonth() + "-" + first_date.getDate();
+			var note_data = "pseudo_temp_" + first_date + "_" + $("#notes_ip_address").val();
+			$.cookie(notes_cookie_name, note_data , notes_cookie_options);
+    }
+	
     //Clic pour creation des notes
-    $('#opener').click(function() {
-
+    $('#notes_opener').click(function() {
         //Declaration de la Note et des fonctions associees :
         var default_color=$('#default_color').val();
-        z_index_max=parseInt($("#z_index_max").val());
+        z_index_max=parseInt(z_input.val());
         var new_z_index=z_index_max+1;
+        var maintenant=new Date();
+    	var notes_cookie_auteur = $.cookie(notes_cookie_name);
+		
         var note_html = "\
-        <li id='ancre_note_" + identifier + "' class='notes-list'><div id='note_" + identifier + "' class='notes ui-draggable ui-resizable' style='background-color:" + default_color + "; left:" + identifier*2 + "px; top:" + identifier*2 + "px; z-index: " + new_z_index + "; '\n\
+        <li id='ancre_note_" + identifier + "' class='notes-list'>\n\
+        <div id='note_" + identifier + "' class='notes ui-draggable ui-resizable' style='background-color:" + default_color + "; left:" + identifier*2 + "px; top:" + identifier*2 + "px; z-index: " + new_z_index + "; '\n\
         numordre='" + identifier + "' \n\
         ferme='0' \n\
         reduit='0' \n\
@@ -251,39 +347,78 @@ $(document).ready(function() {
         former_content_width='0' \n\
         former_top='0' \n\
         former_left='0' >\n\
-            \t<div id='note_param_section_" + identifier + "' class='notes-color-picker notes-default-hidden-part'  >\n\
-                \t\t<div id='colorpicker_" + identifier + "' class='notes-color-picker'></div>\n\
+            \t<div id='note_param_section_" + identifier + "' class='notes-param-section notes-default-hidden-part'  >\n\
+                \t\t<ul class='notes-param-tabs' >\n\
+                \t\t\t<li><a href='#tab" + identifier + "-1'>Identification</a></li>\n\
+                \t\t\t<li><a href='#tab" + identifier + "-2'>M&eacute;tas</a></li>\n\
+                \t\t\t<li><a href='#tab" + identifier + "-3'>QQOQCP</a></li>\n\
+                \t\t\t<li><a href='#tab" + identifier + "-4'>Accès</a></li>\n\
+                \t\t\t<li><a href='#tab" + identifier + "-5'>Style</a></li>\n\
+                \t\t</ul>\n\
+                \t\t<div class='notes-param-section-content'>\n\
+                    \t\t\t<div id='tab" + identifier + "-1' class='notes-param-tabs-content' >\n\
+                        \t\t\t\t<fieldset>\n\
+                            \t\t\t\t\t<legend>Note Info</legend>\n\
+                            \t\t\t\t\t<ol>\n\
+                            \t\t\t\t\t<li><label for='note_id_" + identifier + "'>Note Id. : </label>\n\
+                                \t\t\t\t\t\t<input type='text' id='note_id_" + identifier + "' size='7' readonly='true' class='readonly' value='" + identifier + "' />\n\
+                            \t\t\t\t\t</li>\n\
+                            \t\t\t\t\t<li><label for='note_auteur_" + identifier + "'>Author : </label>\n\
+                                \t\t\t\t\t\t<input type='text' id='note_auteur_" + identifier + "' class='note-auteur-input' size='20' value='" + notes_cookie_auteur + "' />\n\
+                            \t\t\t\t\t</li>\n\
+                            \t\t\t\t\t<li><label for='note_creation_date_" + identifier + "'>Creation date : </label>\n\
+                                \t\t\t\t\t\t<input type='text' id='note_creation_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' />\n\
+                            \t\t\t\t\t</li>\n\
+                            \t\t\t\t\t<li><label for='note_modification_date_" + identifier + "'>Last modification date : </label>\n\
+                                \t\t\t\t\t\t<input type='text' id='note_modification_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' />\n\
+                            \t\t\t\t\t</li>\n\
+                            \t\t\t\t\t<li><label for='note_access_date_" + identifier + "'>Access date : </label>\n\
+                                \t\t\t\t\t\t<input type='text' id='note_access_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' />\n\
+                            \t\t\t\t\t</li>\n\
+                            \t\t\t\t\t</ol>\n\
+                        \t\t\t\t</fieldset>\n\
+                    \t\t\t</div>\n\
+                    \t\t\t<div id='tab" + identifier + "-2' class='notes-param-tabs-content' >\n\
+                        \t\t\t\t<span>Last access date :<input type='text' id='note_access_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' /></span><br />\n\
+                    \t\t\t</div>\n\
+                    \t\t\t<div id='tab" + identifier + "-3' class='notes-param-tabs-content' >\n\
+                        \t\t\t\t<span>Last access date :<input type='text' id='note_access_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' /></span><br />\n\
+                    \t\t\t</div>\n\
+                    \t\t\t<div id='tab" + identifier + "-4' class='notes-param-tabs-content' >\n\
+                        \t\t\t\t<span>Last access date :<input type='text' id='note_access_date_" + identifier + "' size='30' readonly='true' class='readonly' value='" + maintenant + "' /></span><br />\n\
+                    \t\t\t</div>\n\
+                    \t\t\t<div id='tab" + identifier + "-5' class='notes-param-tabs-content' >\n\
+                        \t\t\t\t<span>Color : <input type='text' id='note_color_" + identifier + "' size='7' value='" + default_color + "' /></span><br />\n\
+                        \t\t\t\t<div id='colorpicker_" + identifier + "' class='notes-color-picker' style='display:none;'></div>\n\
+                    \t\t\t</div>\n\
+                \t\t</div>\n\
+            \t<span class='notes-param-section-click-button'><button Onclick='note_param_section_click(" + identifier + ");'>Done</button></span>\n\
             \t</div>\n\
-             \t<form method='post' action='#'>\n\
-                \t\t<input type='hidden' id='note_color_" + identifier + "' value='" + default_color + "' />\n\
-                \t\t<input type='hidden' id='note_access_date_" + identifier + "' value='" + new Date() + "' />\n\
-                \t\t<div id='note_title_" + identifier + "' class='notes-title notes-drag-area' >\n\
-                    <!-- icones haut gauche -->\n\
-                    \t\t\t<div id='notes_icons_haut_gauche_" + identifier + "' class='notes-icons-up-left'>\n\
-                        \t\t\t\t<span id='trienotebutton_" + identifier + "' title='Sort note' class='notes-icons notes-icons-up notes-icon-arrowthick-2-n-s notes-sorter-icon notes-default-hidden-part ui-icon ui-icon-arrowthick-2-n-s' ></span>\n\
-                        \t\t\t\t<span id='reduirecontenubutton_" + identifier + "' title='Toggle content' class='notes-icons notes-icons-up notes-icons-triangle-1-s ui-icon ui-icon-triangle-1-s '></span>\n\
-                    \t\t\t</div>\n\
-                    \n\
-                    \t\t\t<input id='title_" + identifier + "' name='title_" + identifier + "' class='notes-change-need-save' style='background-color:" + default_color + ";' />\n\
-                    \n\
-                    <!-- icones haut droite -->\n\
-                    \t\t\t<div id='notes_icons_haut_droite_" + identifier + "' class='notes-icons-up-right'>\n\
-                        \t\t\t\t<ul class='notes-icons-list ui-helper-clearfix' id='icons" + identifier + "'>\n\
-                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='savebutton_" + identifier + "' title='Save' class='notes-icons notes-icons-up notes-icons-disk ui-icon ui-icon-disk '></span></li>\n\
-                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='parambutton_" + identifier + "' title='Parameters' class='notes-icons notes-icons-up notes-icons-gear ui-icon ui-icon-gear '></span></li>\n\
-                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='reduirebutton_" + identifier + "' title='Reduce' class='notes-icons notes-icons-up notes-icons-minus ui-icon ui-icon-minus '></span></li>\n\
-                            \t\t\t\t\t<li class='notes-icons-list-element '><span id='closebutton_" + identifier + "' title='Close' class='notes-icons notes-icons-close ui-icon ui-icon-close '></span></li>\n\
-                        \t\t\t\t</ul>\n\
-                    \t\t\t</div>\n\
+            \t\t<div id='note_title_" + identifier + "' class='notes-title notes-drag-area' >\n\
+                <!-- icones haut gauche -->\n\
+                \t\t\t<div id='notes_icons_haut_gauche_" + identifier + "' class='notes-icons-up-left'>\n\
+                    \t\t\t\t<span id='trienotebutton_" + identifier + "' title='Sort note' class='notes-icons notes-icons-up notes-icon-arrowthick-2-n-s notes-sorter-icon notes-default-hidden-part ui-icon ui-icon-arrowthick-2-n-s' ></span>\n\
+                    \t\t\t\t<span id='reduirecontenubutton_" + identifier + "' title='Toggle content' class='notes-icons notes-icons-up notes-icons-triangle-1-s ui-icon ui-icon-triangle-1-s '></span>\n\
+                \t\t\t</div>\n\
+                \n\
+                \t\t\t<input id='title_" + identifier + "' name='title_" + identifier + "' class='notes-change-need-save' style='background-color:" + default_color + ";' />\n\
+                <!-- icones haut droite -->\n\
+                \t\t<div id='notes_icons_haut_droite_" + identifier + "' class='notes-icons-up-right'>\n\
+                    \t\t\t<ul class='notes-icons-list ui-helper-clearfix' id='icons" + identifier + "'>\n\
+                        \t\t\t\t<li class='notes-icons-list-element '><span id='savebutton_" + identifier + "' title='Save' class='notes-icons notes-icons-up notes-icons-disk ui-icon ui-icon-disk '></span></li>\n\
+                        \t\t\t\t<li class='notes-icons-list-element '><span id='parambutton_" + identifier + "' title='Parameters' class='notes-icons notes-icons-up notes-icons-gear ui-icon ui-icon-gear '></span></li>\n\
+                        \t\t\t\t<li class='notes-icons-list-element '><span id='reduirebutton_" + identifier + "' title='Reduce' class='notes-icons notes-icons-up notes-icons-minus ui-icon ui-icon-minus '></span></li>\n\
+                        \t\t\t\t<li class='notes-icons-list-element '><span id='closebutton_" + identifier + "' title='Close' class='notes-icons notes-icons-close ui-icon ui-icon-close '></span></li>\n\
+                    \t\t\t</ul>\n\
                 \t\t</div>\n\
-                \t\t<div id='note_content_" + identifier + "' class='notes_content' >\n\
-                    \t\t\t<textarea name='note_info" + identifier + "' id='note_info" + identifier + "' class='also_resize_" + identifier + " notes-change-need-save' style='background-color:" + default_color + ";' ></textarea><br /> \n\
-                    <!-- icon bas gauche-->\n\
-                    \t\t\t<div id='notes_icons_bas_gauche_" + identifier + "' class='notes-icons-down-left'>\n\
-                        \t\t\t\t<span id='killbutton_" + identifier + "' title='Delete note' class='notes-icons notes-icons-down notes-icons-trash ui-icon ui-icon-trash '></span>\n\
-                    \t\t\t</div>\n\
+            \t</div>\n\
+            \t<div id='note_content_" + identifier + "' class='notes_content' >\n\
+                \t\t<textarea name='note_info" + identifier + "' id='note_info" + identifier + "' class='also_resize_" + identifier + " notes-change-need-save' style='background-color:" + default_color + ";' ></textarea><br /> \n\
+                <!-- icon bas gauche-->\n\
+                \t\t<div id='notes_icons_bas_gauche_" + identifier + "' class='notes-icons-down-left'>\n\
+                    \t\t\t<span id='killbutton_" + identifier + "' title='Delete note' class='notes-icons notes-icons-down notes-icons-trash ui-icon ui-icon-trash '></span>\n\
                 \t\t</div>\n\
-            \t</form>\n\
+            \t</div>\n\
         </div></li>\n";
 
         //Ajout de la note dans l'ancre à notes
@@ -294,13 +429,16 @@ $(document).ready(function() {
         
         //Note dimensionnable
         note_redimensionnable(note);
-
+        
         //Note déplacable
         note_deplacable(note);
-        
+
+        //Note avec des tabulations dans la section paramètres:
+        note_parameter_tab(note);
+
         identifier++;
         z_index_max++;
-        $("#z_index_max").val(z_index_max);
+        z_input.val(z_index_max);
         return false;
     });
 
@@ -318,6 +456,7 @@ $(document).ready(function() {
             }
         }
     });
+    
     //Reduit la note
     $(".notes-icons-minus").live('click',function() {
         var note = $(this).parents(".notes");
@@ -329,6 +468,7 @@ $(document).ready(function() {
             }
         }
     });
+
     //Ferme la note
     $(".notes-icons-triangle-1-s").live('click',function() {
         var note = $(this).parents(".notes");
@@ -340,26 +480,21 @@ $(document).ready(function() {
             }
         }
     });
+
     //Detruit la note
     $(".notes-icons-trash").live('click',function() {
         var note = $(this).parents(".notes");
-        var id = note.attr("numordre");
-        id=parseInt(id);
-        if (!isNaN(id)){
-            if( confirm('Voulez-vous vraiment envoyer cette note à la corbeille?') ) {
-                runEffect(id,0);
-            }
+        if( confirm('Voulez-vous vraiment envoyer cette note à la corbeille?') ) {
+            delete_note(note);
         }
     });
+
     //Cache la note
     $(".notes-icons-close").live('click',function() {
         var note = $(this).parents(".notes");
-        var id = note.attr("numordre");
-        id=parseInt(id);
-        if (!isNaN(id)){
-            runEffect(id,1);
-        }
+        hide_note(note);
     });
+
     //Affiche les parametres de la note
     $(".notes-icons-gear").live('click',function(){
         var note = $(this).parents(".notes");
@@ -371,12 +506,22 @@ $(document).ready(function() {
                 var param_button_position = $(this).position();
                 var top_pos=param_button_position.top+16;
                 var left_pos=param_button_position.left;
-                $('#colorpicker_' + id).farbtastic('#note_color_' + id);
                 var note_z_index=note.css('z-index');
                 note_param_section.css('top',top_pos+'px');
                 note_param_section.css('left',left_pos+'px');
                 note_param_section.css('z-index',note_z_index+1);
                 note_param_section.fadeIn('slow');
+
+                //Gestion du choix de couleur
+                var colorpicker=$('#colorpicker_' + id);
+                colorpicker.farbtastic('#note_color_' + id);
+                var default_color_element=$('#note_color_' + id);
+                default_color_element.focusin(function(){
+                    colorpicker.fadeIn('1000');
+                });
+                default_color_element.focusout(function(){
+                    colorpicker.fadeOut('1000');
+                });
             }
             else {
                 var color=$('#note_color_' + id).val();
@@ -415,7 +560,7 @@ $(document).ready(function() {
     //
     //
     //Reduit et ranges les Notes par ordre d'id
-    $('#reducer').click(function() {
+    $('#notes_reducer').click(function() {
         var all_notes=$(".notes");
         for(i = 0; i < all_notes.length; i++)
         {
@@ -428,7 +573,7 @@ $(document).ready(function() {
         }
     });
     //Sauve toutes les Notes
-    $('#saver').click(function() {
+    $('#notes_saver').click(function() {
         var all_notes=$(".notes");
         for(i = 0; i < all_notes.length; i++)
         {
@@ -446,15 +591,18 @@ $(document).ready(function() {
     });
 
     //Reglage de la couleur par defaut
-    $('#colorpicker').farbtastic('#default_color');
-    $('#default_color').focusin(function(){
-        $('#colorpicker').fadeIn('1000');
+    var colorpicker=$('#colorpicker');
+    colorpicker.farbtastic('#default_color');
+    var default_color_element=$('#default_color');
+    default_color_element.focusin(function(){
+        colorpicker.fadeIn('1000');
     });
-    $('#default_color').focusout(function(){
-        $('#colorpicker').fadeOut('1000');
+    default_color_element.focusout(function(){
+        colorpicker.fadeOut('1000');
     });
 
-    $("body").click(function (){
+    /*
+	$("body").click(function (){
         var all_notes=$(".notes");
         for(i = 0; i < all_notes.length; i++)
         {
@@ -470,6 +618,7 @@ $(document).ready(function() {
             }
         }
     });
+	*/
 
     //hover state on the icons
     $('.ui-icon').live('mouseover mouseout', function(event) {
