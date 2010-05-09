@@ -1,9 +1,10 @@
 
 <div id="notes_action_bar">
-    <span id="opener" class="notes-opener notes-effect"><img src="<?php echo base_url(); ?>images/post-it.jpg" height="75" width="75" alt="Create a note" /><input type="hidden" id="z_index_max" name="z_index_max" value="0" /></span>
-    <span id="reducer" class="notes-reducer notes-effect">Reduce Notes</span>
-    <span id="saver" class="notes-saver notes-effect">Save Notes</span>
-    <span id="trasher" class="notes-trasher notes-effect"><img src="<?php echo base_url(); ?>images/trasher.jpg" alt="Bin" /></span>
+    <span id="notes_opener" class="notes-opener notes-effect"><img src="<?php echo base_url(); ?>images/post-it.jpg" height="75" width="75" alt="Create a note" /><input type="hidden" id="z_index_max" name="z_index_max" value="0" /></span>
+    <span id="notes_reducer" class="notes-reducer notes-effect">Reduce Notes</span>
+    <span id="notes_saver" class="notes-saver notes-effect">Save Notes</span>
+    <span id="notes_trasher" class="notes-trasher notes-effect"><img src="<?php echo base_url(); ?>images/trasher.jpg" alt="Bin" /></span>
+    <span id="notes_common_data" class="notes-default-hidden-part"><input id="notes_ip_address" type="hidden" value="<?php echo $_SERVER['REMOTE_ADDR'];?>" /></span>
 </div>
 <div id="notes_effect_param_default">
     <span class="notes-effect">
