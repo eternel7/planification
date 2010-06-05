@@ -332,7 +332,7 @@ $(document).ready(function() {
         z_index_max=parseInt(z_input.val());
         var new_z_index=z_index_max+1;
         var maintenant=new Date();
-        maintenant = 
+        maintenant = maintenant.getFullYear() +"/"+ maintenant.getMonth() +"/"+ maintenant.getDate() +" "+ maintenant.getHours() +":"+ maintenant.getMinutes() +":"+ maintenant.getSeconds() +" "+ maintenant.getMilliseconds()+"ms";
     	var notes_cookie_auteur = $.cookie(notes_cookie_name);
 		
         var note_html = "\
