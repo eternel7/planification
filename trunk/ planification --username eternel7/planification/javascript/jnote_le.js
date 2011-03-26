@@ -2,30 +2,161 @@
 var notes_cookie_name = 'jnote_le_cookie';
 var notes_cookie_options = {path: '/', expires: 30};
 
+//Retire l'ensemble du code html d'une note
+function remove_note(note){
+    setTimeout(function(){
+        note.parent().remove();
+    }, 600);
+}
+
+//Sauve une note
+function save_note(note){
+    var id = note.attr("numordre");
+    id=parseInt(id, 10);
+    if (!isNaN(id)){
+        $("#savebutton_" + id).removeClass('ui-state-active');
+        note.attr("a_enregistrer",0);
+		var note_auteur = $('#note_auteur_' + id).val();
+		$.cookie(notes_cookie_name, note_auteur, notes_cookie_options);
+	}
+    else{
+        alert("Error during save. Didn't detect note correctly");
+    }
+	return false;
+}
+
+//Supprime une note
+function delete_note(note){
+    //get effect type from
+    var selectedEffect = "bounce";
+    selectedEffect = $('#effectTypeskill').val();
+
+    //most effect types need no effect_options passed by default
+    var effect_options = {};
+    //check if it's scale, transfer, or size - they need effect_options explicitly set
+    if(selectedEffect == 'scale'){
+        effect_options = {
+            percent: 0
+        };
+    }
+    else if(selectedEffect == 'size'){
+        effect_options = {
+            to: {
+                width: 200,
+                height: 60
+            }
+        };
+    }
+    note.hide(selectedEffect,effect_options,500,remove_note(note));
+}
+
+//Cache une note
+function hide_note(note){
+    //get effect type from
+    var selectedEffect = "bounce";
+    selectedEffect = $('#effectTypesclose').val();
+
+    //most effect types need no effect_options passed by default
+    var effect_options = {};
+    //check if it's scale, transfer, or size - they need effect_options explicitly set
+    if(selectedEffect == 'scale'){
+        effect_options = {
+            percent: 0
+        };
+    }
+    else if(selectedEffect == 'size'){
+        effect_options = {
+            to: {
+                width: 200,
+                height: 60
+            }
+        };
+    }
+    note.hide(selectedEffect,effect_options,500);
+}
+
+//Rend une note redimensionnable
+function note_redimensionnable(note){
+    var id = note.attr("numordre");
+    id=parseInt(id, 10);
+    if (!isNaN(id)){
+        note.resizable({
+            maxHeight: 50000,
+            maxWidth: 50000,
+            minHeight: 100,
+            minWidth: 250,
+            alsoResize: '.also_resize_' + id
+        });
+    }
+}
+
+//Rend une note deplacable
+function note_deplacable(note){
+    note.draggable({
+        handle: '.notes-drag-area',
+        start: function() {
+            var z_index_max_element=$('#z_index_max');
+            var z_index_max=z_index_max_element.val();
+            z_index_max=parseInt(z_index_max, 10);
+            if(note.css('z-index')<z_index_max) {
+                z_index_max++;
+                note.css('z-index',z_index_max);
+                z_index_max_element.val(z_index_max);
+            }
+        }
+    });
+}
+
+//Active les onglets de la section parametre d'une note
+function note_parameter_tab(note)
+{
+    var id = note.attr("numordre");
+    id=parseInt(id, 10);
+    if (!isNaN(id)){
+        $(function() {
+            $("#note_param_section_"+id).tabs({fx: {opacity: 'toggle'}}).find(".ui-tabs-nav").sortable({axis:'x'});
+        });
+    }
+}
+
+//Enregistre les modifications effectuées sur les paramètres d'une note
+function note_param_section_click(id){
+    id=parseInt(id, 10);
+    if (!isNaN(id)){
+        var note = $('#note_'+id);
+        var param_icon=note.find('.notes-icons-gear');
+        param_icon.click();
+		save_note(note);
+    }
+    return false;
+}
+
 //run the currently selected effect to toggle
 function runEffect(id,effect_option){
     //the note to run the effect on
     var note=$("#note_"+id);
-
+    
+	//most effect types need no effect_options passed by default
+	var effect_options = {};
+	
     //get effect type from
     var selectedEffect = "bounce";
-    if (effect_option==0) {
+    if (effect_option===0) {
         selectedEffect = $('#effectTypeskill').val();
     }
-    else if (effect_option==2 || effect_option==3) {
+    else if (effect_option===2 || effect_option===3) {
         selectedEffect = $('#effectTypes').val();
     }
-    if (effect_option==0 || effect_option==2 || effect_option==3) {
-        //most effect types need no options passed by default
-        var options = {};
-        //check if it's scale, transfer, or size - they need options explicitly set
+    if (effect_option===0 || effect_option===2 || effect_option===3) {
+        
+        //check if it's scale, transfer, or size - they need effect_options explicitly set
         if(selectedEffect == 'scale'){
-            options = {
+            effect_options = {
                 percent: 0
             };
         }
         else if(selectedEffect == 'size'){
-            options = {
+            effect_options = {
                 to: {
                     width: 200,
                     height: 60
@@ -39,13 +170,13 @@ function runEffect(id,effect_option){
     var note_title_area= $("#note_title_"+id);
     var note_content=$("#note_content_"+id);
 
-    if (effect_option==0) {     //delete note option
-        note.hide(selectedEffect,options,500,remove_note(note));
+    if (effect_option===0) {     //delete note option
+        note.hide(selectedEffect,effect_options,500,remove_note(note));
     }
-    else if (effect_option==1){     //close (hide) note option
-        note.hide(selectedEffect,options,500);
+    else if (effect_option===1){     //close (hide) note option
+        note.hide(selectedEffect,effect_options,500);
     }
-    else if (effect_option==2) {    //reduire une note en 2100ms
+    else if (effect_option===2) {    //reduire une note en 2100ms
         //Positionnement de l'ancre 'li' de chaque note
         var li=note.parent();
         var li_pos=li.position();
@@ -60,8 +191,8 @@ function runEffect(id,effect_option){
             }
             note_title_area.removeClass('notes-drag-area');
             note.draggable("destroy");
-            note.attr('former_top',parseInt(note_position.top));
-            note.attr('former_left',parseInt(note_position.left));
+            note.attr('former_top',parseInt(note_position.top, 10));
+            note.attr('former_left',parseInt(note_position.left, 10));
             setTimeout(function(){
                 note.animate({
                     'left' : li_pos.left+'px',
@@ -87,7 +218,7 @@ function runEffect(id,effect_option){
                 note.attr("reduit","1");
             },2100);
         }
-        else if (note.attr('reduit')==1) {
+        else if (note.attr('reduit')===1) {
             //empeche la double action
             note.attr('reduit','2');
 
@@ -120,7 +251,7 @@ function runEffect(id,effect_option){
             },2100);
         }
     }
-    else if (effect_option==3) {    //fermer une note en 600ms
+    else if (effect_option===3) {    //fermer une note en 600ms
         if (note.attr('ferme')==0) {
             //empeche la double action
             note.attr('ferme','2');
@@ -138,7 +269,7 @@ function runEffect(id,effect_option){
                 "width": "250px"
             },500);
             setTimeout(function(){
-                note_content.toggle(selectedEffect,options,500);
+                note_content.toggle(selectedEffect,effect_options,500);
             }, 20);
 
             //permet a nouveau d'executer l'action
@@ -156,7 +287,7 @@ function runEffect(id,effect_option){
                     "width": note.attr('former_width')
                 },500);
             },20);
-            note_content.toggle(selectedEffect,options,500);
+            note_content.toggle(selectedEffect,effect_options,500);
 
             note_deplacable(note);
             note_redimensionnable(note);
@@ -172,140 +303,11 @@ function runEffect(id,effect_option){
     }
 }
 
-//Retire l'ensemble du code html d'une note
-function remove_note(note){
-    setTimeout(function(){
-        note.parent().remove();
-    }, 600);
-}
-
-//Sauve une note
-function save_note(note){
-    var id = note.attr("numordre");
-    id=parseInt(id);
-    if (!isNaN(id)){
-        $("#savebutton_" + id).removeClass('ui-state-active');
-        note.attr("a_enregistrer",0);
-		var note_auteur = $('#note_auteur_' + id).val();
-		$.cookie(notes_cookie_name, note_auteur, notes_cookie_options);
-	}
-    else{
-        alert("Error during save. Didn't detect note correctly");
-    }
-	return false;
-}
-
-//Supprime une note
-function delete_note(note){
-    //get effect type from
-    var selectedEffect = "bounce";
-    selectedEffect = $('#effectTypeskill').val();
-
-    //most effect types need no options passed by default
-    var options = {};
-    //check if it's scale, transfer, or size - they need options explicitly set
-    if(selectedEffect == 'scale'){
-        options = {
-            percent: 0
-        };
-    }
-    else if(selectedEffect == 'size'){
-        options = {
-            to: {
-                width: 200,
-                height: 60
-            }
-        };
-    }
-    note.hide(selectedEffect,options,500,remove_note(note));
-}
-
-//Cache une note
-function hide_note(note){
-    //get effect type from
-    var selectedEffect = "bounce";
-    selectedEffect = $('#effectTypesclose').val();
-
-    //most effect types need no options passed by default
-    var options = {};
-    //check if it's scale, transfer, or size - they need options explicitly set
-    if(selectedEffect == 'scale'){
-        options = {
-            percent: 0
-        };
-    }
-    else if(selectedEffect == 'size'){
-        options = {
-            to: {
-                width: 200,
-                height: 60
-            }
-        };
-    }
-    note.hide(selectedEffect,options,500);
-}
-
-//Rend une note redimensionnable
-function note_redimensionnable(note){
-    var id = note.attr("numordre");
-    id=parseInt(id);
-    if (!isNaN(id)){
-        note.resizable({
-            maxHeight: 50000,
-            maxWidth: 50000,
-            minHeight: 100,
-            minWidth: 250,
-            alsoResize: '.also_resize_' + id
-        });
-    }
-}
-
-//Rend une note deplacable
-function note_deplacable(note){
-    note.draggable({
-        handle: '.notes-drag-area',
-        start: function() {
-            var z_index_max_element=$('#z_index_max');
-            var z_index_max=z_index_max_element.val();
-            z_index_max=parseInt(z_index_max);
-            if(note.css('z-index')<z_index_max) {
-                z_index_max++;
-                note.css('z-index',z_index_max);
-                z_index_max_element.val(z_index_max);
-            }
-        }
-    });
-}
-
-//Active les onglets de la section parametre d'une note
-function note_parameter_tab(note)
-{
-    var id = note.attr("numordre");
-    id=parseInt(id);
-    if (!isNaN(id)){
-        $(function() {
-            $("#note_param_section_"+id).tabs({fx: {opacity: 'toggle'}}).find(".ui-tabs-nav").sortable({axis:'x'});
-        });
-    }
-}
-
-//Enregistre les modifications effectuées sur les paramètres d'une note
-function note_param_section_click(id){
-    id=parseInt(id);
-    if (!isNaN(id)){
-        var note = $('#note_'+id);
-        var param_icon=note.find('.notes-icons-gear');
-        param_icon.click();
-		save_note(note);
-    }
-    return false;
-}
-
 $(document).ready(function() {
     //Creation de la note avec identifiant incremente pris pour z-index
     //Declaration de l'identifiant incremente
     var identifier;
-    identifier=parseInt(identifier);
+    identifier=parseInt(identifier, 10);
     if (isNaN(identifier)){
         identifier=1;
     }
@@ -317,7 +319,7 @@ $(document).ready(function() {
 	
     //Recherche du cookie ou creation afin de stocker l'identifiant de l'auteur des notes
     var notes_cookie=$.cookie(notes_cookie_name);
-    if(notes_cookie==undefined)
+    if(notes_cookie===undefined)
     {
             var first_date = new Date();
 			first_date = first_date.getFullYear() + "-" + first_date.getMonth() + "-" + first_date.getDate();
@@ -329,7 +331,7 @@ $(document).ready(function() {
     $('#notes_opener').click(function() {
         //Declaration de la Note et des fonctions associees :
         var default_color=$('#default_color').val();
-        z_index_max=parseInt(z_input.val());
+        z_index_max=parseInt(z_input.val(), 10);
         var new_z_index=z_index_max+1;
         var maintenant=new Date();
         maintenant = maintenant.getFullYear() +"/"+ maintenant.getMonth() +"/"+ maintenant.getDate() +" "+ maintenant.getHours() +":"+ maintenant.getMinutes() +":"+ maintenant.getSeconds() +" "+ maintenant.getMilliseconds()+"ms";
@@ -450,7 +452,7 @@ $(document).ready(function() {
     $('.notes-icons-disk').live('click',function() {
         var note = $(this).parents(".notes");
         var id = note.attr("numordre");
-        id=parseInt(id);
+        id=parseInt(id, 10);
         if (!isNaN(id)){
             if(note.attr("a_enregistrer")==1) {
                 save_note(note);
@@ -462,7 +464,7 @@ $(document).ready(function() {
     $(".notes-icons-minus").live('click',function() {
         var note = $(this).parents(".notes");
         var id = note.attr("numordre");
-        id=parseInt(id);
+        id=parseInt(id, 10);
         if (!isNaN(id)){
             if(note.attr("reduit")==0 || note.attr("reduit")==1) {
                 runEffect(id,2);
@@ -474,7 +476,7 @@ $(document).ready(function() {
     $(".notes-icons-triangle-1-s").live('click',function() {
         var note = $(this).parents(".notes");
         var id = note.attr("numordre");
-        id=parseInt(id);
+        id=parseInt(id, 10);
         if (!isNaN(id)){
             if(note.attr("ferme")==0 || note.attr("ferme")==1) {
                 runEffect(id,3);
@@ -500,7 +502,7 @@ $(document).ready(function() {
     $(".notes-icons-gear").live('click',function(){
         var note = $(this).parents(".notes");
         var id = note.attr("numordre");
-        id=parseInt(id);
+        id=parseInt(id, 10);
         if (!isNaN(id)){
             var note_param_section=$('#note_param_section_' + id);
             if (note_param_section.css('display')=='none') {
@@ -549,7 +551,7 @@ $(document).ready(function() {
     //Affichage en premier plan de la note cliquée
     $(".notes").live('mousedown',function() {
         var z_index_max=$('#z_index_max').val();
-        z_index_max=parseInt(z_index_max);
+        z_index_max=parseInt(z_index_max, 10);
         if($(this).css('z-index')<z_index_max) {
             z_index_max++;
             $(this).css('z-index',z_index_max);
@@ -567,7 +569,7 @@ $(document).ready(function() {
         {
             var note = all_notes.eq(i);
             var id = note.attr("numordre");
-            id=parseInt(id);
+            id=parseInt(id, 10);
             if (!isNaN(id)){
                 runEffect(id,2);
             }
@@ -581,7 +583,7 @@ $(document).ready(function() {
             var node = all_notes.eq(i);
             var long_id = node.attr("id");
             var id=long_id.substr(5, long_id.length-5);
-            id=parseInt(id);
+            id=parseInt(id, 10);
             if (!isNaN(id)){
                 var note = $("#note_" + id);
                 if(note.attr("a_enregistrer")==1) {
@@ -609,7 +611,7 @@ $(document).ready(function() {
         {
             var node = all_notes.eq(i);
             var id = node.attr("numordre");
-            id=parseInt(id);
+            id=parseInt(id, 10);
             if (!isNaN(id)){
                 var color=$("#note_color_" + id ).val();
                 $("#note_" + id ).css('background-color',color);
