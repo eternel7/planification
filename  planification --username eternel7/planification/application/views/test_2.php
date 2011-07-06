@@ -26,7 +26,7 @@
         <script type="text/javascript">
         $(document).ready(function () {
             $("#colorpicker").farbtastic("#color");
-            $("td").click(function(){
+            $("td").mouseover(function(){
                 $(this).css('background-color',$("#color").val());
             });
         });
