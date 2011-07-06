@@ -16,7 +16,8 @@ class site extends Controller {
 
         $data['main_content']= 'home';
         $data['sous_type']='';
-        $this->load->view('includes/template_logged',$data);
+        //$this->load->view('includes/template_logged',$data);
+        $this->load->view('test_2.php');
     }
 
     function is_logged_in()
